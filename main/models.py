@@ -18,7 +18,6 @@ class Category(models.Model):
         verbose_name = 'категория'
         verbose_name_plural = 'категории'
 
-
 class Image(models.Model):
     file = models.FileField(
         upload_to='media/product_file',
@@ -59,6 +58,11 @@ class Product(models.Model):
         verbose_name='цена'
     )
 
+    main_image = models.ImageField(
+        upload_to='media/main_images',
+        verbose_name= 'Главная фото'
+    )
+
     images = models.ManyToManyField(
         Image,
         verbose_name='изображения'
@@ -71,7 +75,7 @@ class Product(models.Model):
     )
 
     def __str__(self):
-        return str(self.file)
+        return str(self.title)
 
     class Meta:
         verbose_name = 'продукт'
