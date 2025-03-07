@@ -103,11 +103,12 @@ class Rating(models.Model):
     )
 
     created_date = models.DateTimeField(
+        auto_now_add=True,
         verbose_name='дата создания',
     )
 
     def __str__(self):
-        return self.user
+        return f'{self.user} ---> {self.product}'
 
     class Meta:
         verbose_name = 'отзыв'
@@ -121,7 +122,8 @@ class RatingAnswer(models.Model):
     rating = models.ForeignKey(
         Rating,
         on_delete=models.CASCADE,
-        verbose_name = 'отзыв'
+        verbose_name = 'отзыв',
+        related_name='rating_answers'
     )
     comment = models.TextField(
          max_length=500,
@@ -147,6 +149,9 @@ class RatingAnswer(models.Model):
     class Meta:
         verbose_name = 'ответ на отзыв'
         verbose_name_plural = 'ответы на отзывы'
+
+    def __str__(self):
+        return f'{self.user} ---> {self.rating}'
 
 class Order(models.Model):
     user = models.ForeignKey(

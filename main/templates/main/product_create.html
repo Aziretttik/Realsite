@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+
+{% block content %}
+
+                <div class="heading-section">
+                  <h4>Создание продукта</h4>
+                </div>
+                <div class="login-form bg-dark-transparent p-4 rounded">
+                  <form action="." method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                      <div class="text-center">
+                          {{ form.as_p }}
+                          <button type="submit" class="main-border-button">
+                          Создать
+                        </button>
+                      </div>
+                  </form>
+                </div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="page-content">
+
+          <!-- ***** Banner Start ***** -->
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="main-profile ">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <img src="{% static 'assets/images/avatar-01.jpg' %}" alt="" style="border-radius: 23px;">
+                  </div>
+                  <div class="col-lg-4 align-self-center">
+                    <div class="main-info header-text">
+                      <span>online</span>
+                      <h4>{{user}}</h4>
+                      <p>Цитата по жизни:meow</p>
+                      <div class="main-border-button">
+                        <a href="{% url 'product_create' %}">Создать объявление</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 align-self-center">
+                    <ul>
+                      <li>Объявлений создано<span>5</span></li>
+                      <li>Страна <span>Кыргызстан</span></li>
+                      <li>Продажи <span>Нет</span></li>
+                      <li>Номер телефона<span>0708808081</span></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="clips">
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <div class="heading-section">
+                            <h4><em>Ваши</em> объявления</h4>
+                          </div>
+                        </div>
+                        {% for product in products %}
+                        <div class="col-lg-3 col-sm-6">  {# Каждый продукт в отдельной колонке #}
+                          <div class="item">
+                            <a href="{% url 'product_detail' product.id %}">
+                              <img src="{{ product.main_image.url }}" alt="" style="border-radius: 23px;">
+                            </a>
+                            <div class="down-content">
+                              <h4>{{ product.title }}</h4>
+                              <span>{{ product.price }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                        <div class="col-lg-12">
+                          <div class="main-button">
+                            <a href="{% url 'index' %}">Больше объявлений</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ***** Banner End ***** -->
+
+          <!-- ***** Gaming Library Start ***** -->
+          <div class="gaming-library profile-library">
+            <div class="col-lg-12">
+              <div class="heading-section">
+                <h4><em>Your Gaming</em> Library</h4>
+              </div>
+              <div class="item">
+                <ul>
+                  <li><img src="assets/images/game-01.jpg" alt="" class="templatemo-item"></li>
+                  <li><h4>Dota 2</h4><span>Sandbox</span></li>
+                  <li><h4>Date Added</h4><span>24/08/2036</span></li>
+                  <li><h4>Hours Played</h4><span>634 H 22 Mins</span></li>
+                  <li><h4>Currently</h4><span>Downloaded</span></li>
+                  <li><div class="main-border-button border-no-active"><a href="#">Donwloaded</a></div></li>
+                </ul>
+              </div>
+              <div class="item">
+                <ul>
+                  <li><img src="assets/images/game-02.jpg" alt="" class="templatemo-item"></li>
+                  <li><h4>Fortnite</h4><span>Sandbox</span></li>
+                  <li><h4>Date Added</h4><span>22/06/2036</span></li>
+                  <li><h4>Hours Played</h4><span>745 H 22 Mins</span></li>
+                  <li><h4>Currently</h4><span>Downloaded</span></li>
+                  <li><div class="main-border-button border-no-active"><a href="#">Donwloaded</a></div></li>
+                </ul>
+              </div>
+              <div class="item last-item">
+                <ul>
+                  <li><img src="assets/images/game-03.jpg" alt="" class="templatemo-item"></li>
+                  <li><h4>CS-GO</h4><span>Sandbox</span></li>
+                  <li><h4>Date Added</h4><span>21/04/2022</span></li>
+                  <li><h4>Hours Played</h4><span>632 H 46 Mins</span></li>
+                  <li><h4>Currently</h4><span>Downloaded</span></li>
+                  <li><div class="main-border-button border-no-active"><a href="#">Donwloaded</a></div></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- ***** Gaming Library End ***** -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

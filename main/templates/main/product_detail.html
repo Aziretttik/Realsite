@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <style>
+    /* Стили для звездного рейтинга */
+    .star-rating {
+      direction: rtl;
+      font-size: 2em;
+      unicode-bidi: bidi-override;
+      display: inline-block;
+    }
+    .star-rating input {
+      display: none;
+    }
+    .star-rating label {
+      color: #ccc;
+      cursor: pointer;
+    }
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      color: gold;
+    }
+    .modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+  </style>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content" style="background-color: #edacf5;">
+    <span class="close">&times;</span>
+    <center>
+      <h4>Ответ на отзыв</h4>
+      <form action="" method="post">
+        {% csrf_token %}
+        <textarea name="comment"></textarea><br>
+        <button type="submit">Отправить</button>
+      </form>
+    </center>
+  </div>
+
+</div>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="cyborgModal" tabindex="-1" aria-labelledby="cyborgModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #1f1f1f; border: 1px solid #333; color: #fff;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cyborgModalLabel">Редактирование продукта</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Форма внутри модалки -->
+        <form method="post" action="{% url 'product_update' product.id %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ product_update_form.as_p  }}
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="page-content">
+           {% if messages %}
+            <div class="container mt-4">
+              {% for message in messages %}
+                <div class="alert
+                  {% if message.tags == 'error' %}
+                    alert-danger
+                  {% elif message.tags == 'success' %}
+                    alert-success
+                  {% elif message.tags == 'warning' %}
+                    alert-warning
+                  {% else %}
+                    alert-info
+                  {% endif %}
+                  alert-dismissible fade show" role="alert"
+                >
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <!-- ***** Featured Games Start ***** -->
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="heading-section">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cyborgModal">Изменить</button>
+              </div>
+              <div class="featured-games header-text">
+                <div class="heading-section">
+                  <h4>{{ product.title }}</h4>
+                  <!-- Увеличиваем шрифт и делаем текст белым -->
+                  <span style="font-size: 24px; color: #fff;">
+                    <!-- Звезду можно оставить желтой -->
+                    <i class="fa fa-star" style="color: yellow;"></i>
+                    {% if rating_avg %}
+                      {{ rating_avg }}
+                    {% else %}
+                      Отзывов пока нет
+                    {% endif %}
+                  </span>
+                </div>
+                <div class="owl-features owl-carousel">
+                  {% for image in product.images.all %}
+                    <div class="item">
+                      <div class="thumb">
+                        <img src="{{ image.file.url }}" alt="">
+                        <div class="hover-effect">
+                          <h6>2.4K Streaming</h6>
+                        </div>
+                      </div>
+                      <h4>CS-GO<br><span>249K Downloads</span></h4>
+                      <ul>
+                        <li><i class="fa fa-star"></i> 4.8</li>
+                        <li><i class="fa fa-download"></i> 2.3M</li>
+                      </ul>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="top-downloaded">
+                <div class="heading-section">
+                  <h4><em>{{ product.category }}</em></h4>
+                </div>
+                <ul>
+                  <li>
+                    <img src="{% static 'assets/images/game-01.jpg' %}" alt="" class="templatemo-item">
+                    <h4>Fortnite</h4>
+                    <h6>Sandbox</h6>
+                    <span><i class="fa fa-star" style="color: yellow;"></i> 4.9</span>
+                    <span><i class="fa fa-download" style="color: #ec6090;"></i> 2.2M</span>
+                    <div class="download">
+                      <a href="#"><i class="fa fa-download"></i></a>
+                    </div>
+                  </li>
+                  <li>
+                    <img src="{% static 'assets/images/game-02.jpg' %}" alt="" class="templatemo-item">
+                    <h4>CS-GO</h4>
+                    <h6>Legendary</h6>
+                    <span><i class="fa fa-star" style="color: yellow;"></i> 4.9</span>
+                    <span><i class="fa fa-download" style="color: #ec6090;"></i> 2.2M</span>
+                    <div class="download">
+                      <a href="#"><i class="fa fa-download"></i></a>
+                    </div>
+                  </li>
+                  <li>
+                    <img src="{% static 'assets/images/game-03.jpg' %}" alt="" class="templatemo-item">
+                    <h4>PugG</h4>
+                    <h6>Battle Royale</h6>
+                    <span><i class="fa fa-star" style="color: yellow;"></i> 4.9</span>
+                    <span><i class="fa fa-download" style="color: #ec6090;"></i> 2.2M</span>
+                    <div class="download">
+                      <a href="#"><i class="fa fa-download"></i></a>
+                    </div>
+                  </li>
+                </ul>
+                <div class="text-button">
+                  <a href="profile.html">View All Games</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ***** Featured Games End ***** -->
+
+          <!-- ***** Start Stream Start ***** -->
+          <div class="start-stream">
+            <div class="col-lg-12">
+              <div class="heading-section">
+                <h4><em>How To Start Your</em> Live Stream</h4>
+              </div>
+              <div class="row">
+                <!-- Блок для отображения уже существующих отзывов -->
+                <div class="col-lg-12" style="margin-bottom: 20px;">
+                  <h2>Отзывы о продукте</h2>
+                  {% for rating in product_comments %}
+                      <div style="background-color: #2c2c2c; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+                        <strong style="color: #ec6090">{{ rating.user.first_name }}</strong><br>
+                        <p style="color: #fff;">{{ rating.comment }}</p>
+                        <p style="color: #fff;">Оценка: {{ rating.count }}</p>
+                        <button id="myBtn{{ rating.id }}" class="btn btn-primary" style="margin-top: 10px;">Ответить</button>
+                      </div>
+
+                      <!-- Модальное окно для ответа -->
+                      <div id="myModal{{ rating.id }}" class="modal" style="display: none;">
+                        <div class="modal-content" style="background-color: #edacf5; padding: 20px; border-radius: 8px;">
+                          <span class="close" data-modal-id="myModal{{ rating.id }}"
+                                style="cursor: pointer; float: right; font-weight: bold; font-size: 24px;">&times;</span>
+                          <center>
+                            <h4>Ответ на отзыв</h4>
+                            <form action="{% url 'rating_answer_create' rating.id %}" method="post">
+                              {% csrf_token %}
+                              <textarea name="comment" rows="4" cols="40" style="margin-bottom: 10px;"></textarea><br>
+                              <button type="submit" class="btn btn-success">Отправить</button>
+                            </form>
+                          </center>
+                        </div>
+                      </div>
+
+                      {% if rating.rating_answers.all %}
+                        <div style="margin-left: 40px; margin-top: -10px; margin-bottom: 20px;">
+                          {% for rating_answer in rating.rating_answers.all %}
+                            <div style="
+                              background-color: #3a3a3a;
+                              padding: 10px;
+                              margin-bottom: 10px;
+                              border-radius: 5px;
+                              border-left: 4px solid #ec6090;
+                            ">
+                              <strong style="color: #ec6090;">
+                                {% if rating_answer.user %}
+                                  {{ rating_answer.user.first_name }} отвечает:
+                                {% else %}
+                                  Ответ:
+                                {% endif %}
+                              </strong>
+                              <p style="color: #fff; margin: 5px 0 0 0;">
+                                {{ rating_answer.comment }}
+                              </p>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    {% empty %}
+                      <p>Пока нет отзывов.</p>
+                    {% endfor %}
+
+                </div>
+
+                <!-- Форма для добавления нового отзыва -->
+                <form action="{% url 'rating_create' product.id %}" method="post">
+                  {% csrf_token %}
+                  <h2>Оставьте отзыв о продукте</h2>
+                  <div>
+                    <label for="comment">Комментарий:</label><br>
+                    <textarea id="comment" name="comment" rows="5" cols="50" placeholder="Введите ваш отзыв"></textarea>
+                  </div>
+                  <div>
+                    <label>Оценка:</label><br>
+                    <div class="star-rating">
+                      <input type="radio" id="star5" name="count" value="5" required>
+                      <label for="star5" title="5 звезд">&#9733;</label>
+                      <input type="radio" id="star4" name="count" value="4" required>
+                      <label for="star4" title="4 звезды">&#9733;</label>
+                      <input type="radio" id="star3" name="count" value="3" required>
+                      <label for="star3" title="3 звезды">&#9733;</label>
+                      <input type="radio" id="star2" name="count" value="2" required>
+                      <label for="star2" title="2 звезды">&#9733;</label>
+                      <input type="radio" id="star1" name="count" value="1" required>
+                      <label for="star1" title="1 звезда">&#9733;</label>
+                    </div>
+                  </div>
+                  <div>
+                    <button type="submit">Отправить отзыв</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- ***** Start Stream End ***** -->
+
+          <!-- ***** Live Stream Start ***** -->
+          <div class="live-stream">
+            <div class="col-lg-12">
+              <div class="heading-section">
+                <h4><em>Похожие</em> товары</h4>
+              </div>
+            </div>
+            <div class="row">
+              {% for similar_product in similar_products %}
+              <div class="col-lg-3 col-sm-6">
+                <a href="{% url 'product_detail' similar_product.id %}">
+                  <div class="item">
+                    <div class="thumb">
+                      <img src="{{ similar_product.main_image.url }}" alt="">
+                      <div class="hover-effect">
+                        <div class="content">
+                          <div class="live">
+                            <a href="#">Live</a>
+                          </div>
+                          <ul>
+                            <li><a href="#"><i class="fa fa-eye"></i> 1.2K</a></li>
+                            <li><a href="#"><i class="fa fa-gamepad"></i> CS-GO</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="down-content">
+                      <div class="avatar">
+                        {% if similar_product.user.avatar %}
+                          <img src="{{ similar_product.user.avatar.url }}" alt="" style="max-width: 46px; border-radius: 50%; float: left;">
+                        {% else %}
+                          <img src="{% static 'assets/images/avatar-01.jpg' %}" alt="" style="max-width: 46px; border-radius: 50%; float: left;">
+                        {% endif %}
+                      </div>
+                      <span><i class="fa fa-check"></i> {{ similar_product.user }}</span>
+                      <h4>{{ similar_product.title }}</h4>
+                    </div>
+                  </div>
+                </a>
+              </div>
+
+              {% endfor %}
+              <div class="col-lg-12">
+                <div class="main-button">
+                  <a href="streams.html">Discover All Streams</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ***** Live Stream End ***** -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Находим все кнопки, у которых id начинается с "myBtn"
+    const replyButtons = document.querySelectorAll("[id^='myBtn']");
+
+    replyButtons.forEach(button => {
+      button.addEventListener("click", function() {
+        // Заменяем 'myBtn' на 'myModal' в ID, чтобы получить ID соответствующей модалки
+        const modalId = button.id.replace('myBtn', 'myModal');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'block';
+        }
+      });
+    });
+
+    // Находим все элементы с классом close
+    const closeElements = document.querySelectorAll(".close");
+
+    closeElements.forEach(closeEl => {
+      closeEl.addEventListener("click", function() {
+        // Берём ID модалки из data-атрибута
+        const modalId = closeEl.getAttribute("data-modal-id");
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+
+    // Закрываем модалку по клику вне её области
+    window.addEventListener("click", function(event) {
+      const allModals = document.querySelectorAll(".modal");
+      allModals.forEach(m => {
+        if (event.target === m) {
+          m.style.display = "none";
+        }
+      });
+    });
+  });
+</script>
+
+
+
+{% endblock %}
