@@ -37,7 +37,7 @@
                   <h6>Добро пожаловать в CYBORG</h6>
                   <h4><em>Найди</em> Наши товары здесь</h4>
                   <div class="main-button">
-                    <a href="browse.html">Искать сейчас</a>
+                    <a href="{% url 'catalog' %}">Каталог</a>
                   </div>
                 </div>
               </div>
@@ -59,10 +59,10 @@
                         <div class="item d-flex flex-column">
                           <img src="{{ product.main_image.url }}" alt="">
                           <h4>{{ product.title }}<br><span>{{ product.category }}</span></h4>
-                          <ul class="mt-auto">
-                            <li><i class="fa fa-star"></i> 4.8</li>
+
+                            <li> {{ product.price }}</li>
                             <li><i class="fa fa-download"></i> 2.3M</li>
-                          </ul>
+
                         </div>
                       </a>
                     </div>

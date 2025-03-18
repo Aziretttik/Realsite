@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+<style>
+  .pagination-wrapper {
+    margin-top: 30px;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+  }
+
+
+  .pagination a {
+    color: #e75e8d;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 25px;
+    background-color: #27292a;
+    transition: all 0.3s;
+  }
+
+  .pagination a:hover {
+    background-color: #e75e8d;
+    color: #fff;
+  }
+
+  .current-page {
+    color: #fff;
+    padding: 8px 15px;
+    background-color: #1f2122;
+    border-radius: 25px;
+  }
+</style>
+
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="page-content">
+                {% if messages %}
+                  <div class="container mt-4">
+                    {% for message in messages %}
+                      <div class="alert
+                        {% if message.tags == 'error' %}
+                          alert-danger
+                        {% elif message.tags == 'success' %}
+                          alert-success
+                        {% elif message.tags == 'warning' %}
+                          alert-warning
+                        {% else %}
+                          alert-info
+                        {% endif %}
+                        alert-dismissible fade show" role="alert"
+                      >
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+          <!-- ***** Banner Start ***** -->
+          <div class="main-banner">
+            <div class="row">
+              <div class="col-lg-7">
+                <div class="header-text">
+                  <h6>Добро пожаловать в CYBORG</h6>
+                  <h4><em>Найди</em> Наши товары здесь</h4>
+                  <div class="main-button">
+                    <a href="{% url 'index' %}">Главная</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ***** Banner End ***** -->
+
+          <!-- ***** Most Popular Start ***** -->
+          <div class="most-popular">
+            <div class="row">
+              <div class="col-lg-12">
+                  <form method="get">
+                    {{ products.form.as_p }}
+                    <input type="submit" />
+                  </form>
+                <div class="heading-section">
+                  <h4><em>Самые популярные</em> сейчас</h4>
+                </div>
+                <div class="row d-flex flex-wrap">
+                  {% for product in page_obj %}
+                    <div class="col-lg-3 col-sm-6 d-flex align-items-stretch">
+                      <a href="{% url 'product_detail' product.id %}">
+                        <div class="item d-flex flex-column">
+                          <img src="{{ product.main_image.url }}" alt="">
+                          <h4>{{ product.title }}<br><span>{{ product.category }}</span></h4>
+                            <li>{{ product.price }}</li>
+                            <li><i class="fa fa-download"></i> 2.3M</li>
+                        </div>
+                      </a>
+                    </div>
+                  {% endfor %}
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ***** Most Popular End ***** -->
+          <center>
+              {% if page_obj.has_other_pages %}
+              <div class="row mt-4">
+                  <div class="col-lg-12">
+                      <div class="pagination-wrapper text-center">
+                          <div class="main-button pagination">
+                              {% if page_obj.has_previous %}
+                                  <a href="?page=1{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-prev">&laquo; Первая</a>
+                                  <a href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-prev">Назад</a>
+                              {% endif %}
+
+                              <span class="current-page" style="color: #ffffff !important;">
+                                  Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                              </span>
+
+
+                              {% if page_obj.has_next %}
+                                  <a href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-next">Вперед</a>
+                                  <a href="?page={{ page_obj.paginator.num_pages }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-next">Последняя &raquo;</a>
+                              {% endif %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              {% endif %}
+            </center>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

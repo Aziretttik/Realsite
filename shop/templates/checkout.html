@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .payment-method {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #2d2e37;
+        border-radius: 5px;
+        background-color: #1f2122;
+        max-width: 300px; /* Ограничиваем ширину карточек */
+    }
+
+    .payment-method img {
+        max-width: 150px; /* Ограничиваем размер QR-кода */
+        height: auto;
+        margin-top: 10px;
+    }
+
+    .receipt-upload {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #1f2122;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-content">
+                <h2>Оформление заказа</h2>
+
+                {% if cart.items.all %}
+                    <div class="cart-summary">
+                        <h4>Сумма заказа: {{ cart.get_total_price }} сом</h4>
+
+                        <div class="payment-methods">
+                            <h5>Выберите способ оплаты:</h5>
+                            {% if payment_methods %}
+                                <form method="POST" action="{% url 'checkout' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        {% for method in payment_methods %}
+                                            <div class="col-md-4">
+                                                <div class="payment-method">
+                                                    <input type="radio"
+                                                           id="method_{{ method.id }}"
+                                                           name="payment_method"
+                                                           value="{{ method.id }}"
+                                                           required>
+                                                    <label for="method_{{ method.id }}">{{ method.title }}</label>
+                                                    {% if method.qr_image %}
+                                                        <img src="{{ method.qr_image.url }}" alt="QR код">
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="receipt-upload">
+                                        <h5>Прикрепите чек об оплате:</h5>
+                                        <input type="file"
+                                               name="receipt"
+                                               accept="image/*"
+                                               class="form-control"
+                                               required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mt-3">Подтвердить заказ</button>
+                                </form>
+                            {% else %}
+                                <p>У вас нет добавленных способов оплаты.</p>
+                                <a href="{% url 'payment_method_create' %}" class="btn btn-primary">Добавить способ оплаты</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p>Ваша корзина пуста</p>
+                        <a href="{% url 'index' %}" class="btn btn-primary">Перейти к покупкам</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import MaxLengthValidator, MinValueValidator
 from django.contrib.auth import get_user_model
@@ -153,27 +152,81 @@ class RatingAnswer(models.Model):
     def __str__(self):
         return f'{self.user} ---> {self.rating}'
 
+
+class PaymentMethod(models.Model):
+    DoesNotExist = None
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='payment_methods',
+                             verbose_name='пользователь')
+    title = models.CharField(max_length=123,
+                             verbose_name='название')
+    qr_image = models.ImageField(upload_to='media/qr',
+                                 verbose_name="QR код")
+    created_date = models.DateTimeField(auto_now_add=True,
+                                        verbose_name='дата создания')
+    class Meta:
+        verbose_name = 'способ оплаты'
+        verbose_name_plural = 'способы оплаты'
+
+    def __str__(self):
+        return f'{self.user} ---> {self.title}'
+
 class Order(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE
-    )
-    product = models.ForeignKey(
-        Product,
-        verbose_name='продукт',
-        on_delete=models.CASCADE
-    )
+    STATUS_CHOICES = [
+        ('pending', 'Ожидает оплаты'),
+        ('paid', 'Оплачен'),
+        ('processing', 'В обработке'),
+        ('completed', 'Завершен'),
+        ('cancelled', 'Отменен')
+    ]
 
-    quantity = models.IntegerField(
-        verbose_name='количество'
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    payment_proof = models.ImageField(upload_to='payment_proofs/', null=True, blank=True)
+    receipt_number = models.CharField(max_length=50, unique=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    is_paid = models.BooleanField(
-        default=False,
-        verbose_name='оплачен'
-    )
-    created_date = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='дата создания'
-    )
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
+    def __str__(self):
+            return f"Заказ {self.id} от {self.user.email}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.product.title} - {self.quantity} шт."
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзины'
+
+    def get_total_price(self):
+        return sum(item.get_cost() for item in self.items.all())
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        verbose_name = 'Товар в корзине'
+        verbose_name_plural = 'Товары в корзине'
+
+    def get_cost(self):
+        return self.product.price * self.quantity
 

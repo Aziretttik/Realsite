@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*e_0!n#3+^b#i#$jr_*kf^tmcmw-#0f9kjd+c4)9nn@^bauvtq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'main',
-    'user'
+    'user',
+    'shop'
 ]
 
 MIDDLEWARE = [
@@ -123,8 +125,21 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_ROOT = 'media/'
 MEDIA_URL = '/media/'
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = "sharshenbaevaziret@gmail.com"
+EMAIL_HOST_PASSWORD = "fvmy eoky wvhp ulkn"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
